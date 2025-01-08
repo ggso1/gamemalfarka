@@ -1,7 +1,7 @@
 var config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    width: 1920,
+    height: 1000,
     physics: {
         default: 'arcade',
         arcade: {
@@ -25,10 +25,11 @@ var score = 0;
 var gameOver = false;
 var scoreText;
 
+var worldWidth = 3840
 var game = new Phaser.Game(config);
 
 function preload() {
-    this.load.image('sky', 'assets/sky.png');
+    this.load.image('sky', 'assets/fonforest.webp');
     this.load.image('ground', 'assets/platform.png');
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');
@@ -36,17 +37,29 @@ function preload() {
         'assets/dude.png',
         { frameWidth: 32, frameHeight: 48 }
     );
+    this.add.image(2000, 540, 'sky').setScale(2).setScrollFactor(1); 
 }
 
 var platforms;
 function create() {
-    this.add.image(400, 300, 'sky');
+    // this.add.image(400, 300, 'sky');
+    this.add.tileSprite(0,0,worldWidth, 1080, "sky").setOrigin(0,0)
     platforms = this.physics.add.staticGroup();
+    
 
-    platforms.create(400, 568, 'ground').setScale(2).refreshBody();
-    platforms.create(600, 400, 'ground');
-    platforms.create(50, 250, 'ground');
-    platforms.create(750, 220, 'ground');
+    platforms.create(0, 940, 'ground')
+    .setOrigin(0, 0)
+    .setScale(worldWidth / 128, 2)
+    .refreshBody();
+
+// Додаткові платформи на різних висотах
+for (let x = 200; x < worldWidth; x += 400) { 
+    platforms.create(x, 600, 'ground').setOrigin(0, 0).refreshBody();
+    platforms.create(x + 200, 400, 'ground').setOrigin(0, 0).refreshBody();
+}
+     
+
+    
 
     player = this.physics.add.sprite(100, 450, 'dude');
 
@@ -143,7 +156,15 @@ function hitBomb (player, bomb)
 
     gameOver = true;
 }
+
+this.cameras.main.setBounds(0, 0, 4000, 1080);
+this.physics.world.setBounds(0, 0, 4000, 1080);
+
+this.cameras.main.startFollow(player);
+
 }
+
+
 
     function update() {
         cursors = this.input.keyboard.createCursorKeys();
@@ -170,4 +191,5 @@ function hitBomb (player, bomb)
             {
                 player.setVelocityY(-330);
             }
+
     }

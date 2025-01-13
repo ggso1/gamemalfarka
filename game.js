@@ -29,7 +29,7 @@ var worldWidth = 1920 * countOfScreens
 var game = new Phaser.Game(config);
 
 function preload() {
-    this.load.image('sky', 'assets/2.jpg');
+    this.load.image('sky', 'assets/fonfor.webp');
     this.load.image('ground', 'assets/platform.png');
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');
@@ -52,8 +52,9 @@ function create() {
     // // .setScale(worldWidth / 128, 2)
     // .refreshBody();
     for (var x = 0; x < worldWidth; x = x + 128) {
-        platforms.create(x, 892, 'ground').setOrigin(0, 0).refreshBody();
+        platforms.create(x, 950, 'ground').setOrigin(0, 0).refreshBody(); // Зміщення платформи вниз
     }
+    
 
 
     player = this.physics.add.sprite(100, 450, 'dude');
@@ -90,6 +91,7 @@ stars = this.physics.add.group({
 
 stars.children.iterate(function (child) {
     child.body.setGravityY(Phaser.Math.Between(50, 100)); // Додаємо гравітацію для кожної зірочки
+    child.setBounce(0.7); // Встановлюємо коефіцієнт відскоку
 });
 this.physics.add.collider(stars, platforms);
 this.physics.add.overlap(player, stars, collectStar, null, this);
@@ -98,7 +100,7 @@ function collectStar (player, star)
     star.disableBody(true, true);
     
 }
-scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '10px', fill: '#000' });
 
 bombs = this.physics.add.group();
 

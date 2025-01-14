@@ -24,8 +24,9 @@ var cursors;
 var score = 0;
 var gameOver = false;
 var scoreText;
-var countOfScreens = 1
+var countOfScreens = 2
 var worldWidth = 1920 * countOfScreens
+let platformsPerScreen = 2;
 var game = new Phaser.Game(config);
 
 function preload() {
@@ -47,12 +48,24 @@ function create() {
     platforms = this.physics.add.staticGroup();
     
 
+    for (let i = 0; i < 2; i++) {
+        let x = Phaser.Math.Between(500, 800); // Випадкова координата X на більшому діапазоні
+        let y = 400 + i * 350; // Розташування по Y (крок 350 пікселів)
+        let scale = Phaser.Math.FloatBetween(1, 2); // Випадковий масштаб від 1 до 2
+    
+        platforms.create(x, y, 'ground').setScale(scale).refreshBody();
+    }
+    
+
+    
+    
+
     // platforms.create(0, 940, 'ground')
     // .setOrigin(0, 0)
     // // .setScale(worldWidth / 128, 2)
     // .refreshBody();
     for (var x = 0; x < worldWidth; x = x + 128) {
-        platforms.create(x, 950, 'ground').setOrigin(0, 0).refreshBody(); // Зміщення платформи вниз
+        platforms.create(x, 970, 'ground').setOrigin(0, 0).refreshBody(); 
     }
     
 
@@ -100,11 +113,11 @@ function collectStar (player, star)
     star.disableBody(true, true);
     
 }
-scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '10px', fill: '#000' });
 
 bombs = this.physics.add.group();
 
-scoreText = this.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+scoreText = this.add.text(80, 80, 'score: 0', { fontSize: '32px', fill: '#ffffff' });
+scoreText.setScrollFactor(0);
 
 this.physics.add.collider(player, platforms);
 this.physics.add.collider(stars, platforms);
@@ -163,6 +176,7 @@ this.cameras.main.startFollow(player);
 
 
 }
+
 
 
 

@@ -1,7 +1,7 @@
 var config = {
     type: Phaser.AUTO,
-    width: 1920,
-    height: 1000,
+    width: 1200,
+    height: 800,
     physics: {
         default: 'arcade',
         arcade: {
@@ -24,25 +24,24 @@ var cursors;
 var score = 0;
 var gameOver = false;
 var scoreText;
-var countOfScreens = 2
-var worldWidth = 1920 * countOfScreens
+var timerText;
+var livesText;
+var countOfScreens = 1;
+var worldWidth = 1200 * countOfScreens;
 let platformsPerScreen = 2;
 var game = new Phaser.Game(config);
+var timer = 0;
+var lives = 3; 
+var timerEvent;
 
 function preload() {
     this.load.image('sky', 'assets/fonforest.png');
     this.load.image('ground', 'assets/platform.png');
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');
-    this.load.spritesheet('dude',
-        'assets/dude.png',
-        { frameWidth: 32, frameHeight: 48 }
-    );
-    
+    this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
 }
 
-var platforms;
-var movingPlatforms;
 function create() {
     this.add.tileSprite(0, 0, worldWidth, 1080, "sky").setOrigin(0, 0);
 
@@ -54,34 +53,35 @@ function create() {
 
     movingPlatforms = this.physics.add.group();
 
-    for (let i = 0; i < 4; i++) {
-        let x = Phaser.Math.Between(900, 1000);
+    for (let i = 0; i < 2; i++) {
+        let x = Phaser.Math.Between(50, worldWidth-200);
         let y = Phaser.Math.Between(500, 900);
-        let scale = Phaser.Math.FloatBetween(0.5, 1.5);
-    
+        let scale = Phaser.Math.FloatBetween(0.5, 0.5);
+
         let platform = movingPlatforms.create(x, y, 'ground').setScale(scale).refreshBody();
         platform.body.setAllowGravity(false);
         platform.body.setImmovable(true);
-        platform.body.setVelocityX(Phaser.Math.Between(50, 150));  // Рух вправо спочатку
+        platform.body.setVelocityX(Phaser.Math.Between(50, 150)); // Рух вправо спочатку
         platform.setCollideWorldBounds(true);
-    
+
         // Подія для зміни напрямку руху
-        platform.body.onWorldBounds = true;
-        platform.body.world.on('worldbounds', function (body) {
+         platform.body.onWorldBounds = false;
+         platform.body.world.on('worldbounds', function (body) {
+            
+
             if (body.gameObject === platform) {
-                if (body.touching.right || body.touching.left) {  // Перевірка на зіткнення з боками
+                console.log("stop")
+                if (body.touching.right || body.touching.left) {
                     platform.body.setVelocityX(-platform.body.velocity.x);
-                }
-            }
-        });
+                 }
+             }
+         });
     }
-    
-    
+
     // Гравець
     player = this.physics.add.sprite(200, 450, 'dude');
     player.setBounce(0.5);
     player.setCollideWorldBounds(true);
-    
 
     // Анімації для гравця
     this.anims.create({
@@ -129,9 +129,14 @@ function create() {
     this.physics.add.collider(bombs, platforms);
     this.physics.add.collider(player, bombs, hitBomb, null, this);
 
-    // Текст для рахунку
-    scoreText = this.add.text(80, 80, 'Score: 0', { fontSize: '32px', fill: '#ffffff' });
+    // Текст для рахунку, часу та життів
+    scoreText = this.add.text(80, 50, 'Score: 0', { fontSize: '32px', fill: '#ffffff' });
+    timerText = this.add.text(80, 100, 'Time: 0', { fontSize: '32px', fill: '#ffffff' });
+    livesText = this.add.text(80, 150, 'Lives: 3', { fontSize: '32px', fill: '#ffffff' });
+
     scoreText.setScrollFactor(0);
+    timerText.setScrollFactor(0);
+    livesText.setScrollFactor(0);
 
     // Розширення світу
     this.cameras.main.setBounds(0, 0, worldWidth, 1080);
@@ -139,6 +144,14 @@ function create() {
 
     // Слідкування за гравцем
     this.cameras.main.startFollow(player);
+
+    // Таймер оновлення кожну секунду
+    timerEvent = this.time.addEvent({
+        delay: 1000,
+        callback: updateTimer,
+        callbackScope: this,
+        loop: true,
+    });
 
     function collectStar(player, star) {
         star.disableBody(true, true);
@@ -162,10 +175,33 @@ function create() {
     }
 
     function hitBomb(player, bomb) {
-        this.physics.pause();
-        player.setTint(0xff0000);
-        player.anims.play('turn');
-        gameOver = true;
+        bomb.disableBody(true, true);
+
+        lives -= 1;
+        livesText.setText('Lives: ' + lives);
+
+        if (lives === 0) {
+            this.physics.pause();
+            player.setTint(0xff0000);
+            player.anims.play('turn');
+            gameOver = true;
+            score = 0;
+            timer = 0;
+        } else {
+            resetPlayer();
+        }
+    }
+
+    function resetPlayer() {
+        player.setPosition(200, 450);
+        player.setTint(0xffffff);
+    }
+
+    function updateTimer() {
+        if (!gameOver) {
+            timer++;
+            timerText.setText('Time: ' + timer);
+        }
     }
 }
 

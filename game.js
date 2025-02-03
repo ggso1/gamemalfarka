@@ -26,7 +26,7 @@ var gameOver = false;
 var scoreText;
 var timerText;
 var livesText;
-var countOfScreens = 1;
+var countOfScreens = 2.5;
 var worldWidth = 1200 * countOfScreens;
 let platformsPerScreen = 2;
 var game = new Phaser.Game(config);
@@ -35,7 +35,7 @@ var lives = 3;
 var timerEvent;
 
 function preload() {
-    this.load.image('sky', 'assets/fonforest.png');
+    this.load.image('sky', 'assets/13.png');
     this.load.image('ground', 'assets/platform.png');
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');

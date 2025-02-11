@@ -39,7 +39,7 @@ function preload() {
     this.load.image('ground', 'assets/platform.png');
     this.load.image('star', 'assets/star.png');
     this.load.image('bomb', 'assets/bomb.png');
-    this.load.spritesheet('dude', 'assets/dude.png', { frameWidth: 32, frameHeight: 48 });
+    this.load.spritesheet('dude', 'assets/dude1.png', { frameWidth: 32, frameHeight: 48 });
 }
 
     function create() {
@@ -110,6 +110,7 @@ function preload() {
         // Колайдери для гравця
         this.physics.add.collider(player, platforms);
         this.physics.add.collider(player, movingPlatforms);
+        
 
         // Зірки
         stars = this.physics.add.group({
@@ -124,7 +125,12 @@ function preload() {
         });
 
         this.physics.add.collider(stars, platforms);
-        this.physics.add.collider(stars, movingPlatforms);
+        this.physics.add.collider(stars, movingPlatforms, function (star, platform) {
+            if (star.body.touching.down) { 
+                star.setVelocityX(platform.body.velocity.x); // Робимо зірку рухомою разом із платформою
+            }
+        });
+        
         this.physics.add.overlap(player, stars, collectStar, null, this);
 
         // Перевірка, щоб зірки не виходили за межі
@@ -149,6 +155,7 @@ function preload() {
         this.physics.add.collider(player, bombs, hitBomb, null, this);
 
         // Текст для рахунку, часу та життів
+        
         scoreText = this.add.text(80, 50, 'Score: 0', { fontSize: '32px', fill: '#ffffff' });
         timerText = this.add.text(80, 100, 'Time: 0', { fontSize: '32px', fill: '#ffffff' });
         livesText = this.add.text(80, 150, 'Lives: 3', { fontSize: '32px', fill: '#ffffff' });

@@ -1,0 +1,12 @@
+body { 
+    margin: 0;
+    height: 100vh;           
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    align-items: center;
+}
+#leaderboard {
+    font: 150%  "Consolas", monospace;
+    margin-left: 1em;
+}

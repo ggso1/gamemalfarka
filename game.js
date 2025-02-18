@@ -127,9 +127,12 @@ function create() {
     });
 
     stars.children.iterate(function (child) {
-        child.body.setGravityY(Phaser.Math.Between(50, 100));
-        child.setBounce(0.7);
-        child.setCollideWorldBounds(true)
+        child.setBounce(0); 
+        child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.4));
+        child.setCollideWorldBounds(true);
+        child.body.setAllowGravity(true); 
+        child.setVelocityX(0);
+        
     });
 
     this.physics.add.collider(stars, platforms);

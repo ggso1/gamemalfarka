@@ -26,9 +26,9 @@ var gameOver = false;
 var scoreText;
 var timerText;
 var livesText;
-var countOfScreens = 1;
+var countOfScreens = 2;
 var worldWidth = 1200 * countOfScreens;
-let platformsPerScreen = 4;
+let platformsPerScreen = 8;
 var game = new Phaser.Game(config);
 var timer = 0;
 var lives = 3;
@@ -70,19 +70,6 @@ function create() {
     
         platform.setCollideWorldBounds(true);  // Важливо додати це!
         platform.setBounce(1, 1)
-        //this.physics.world.collide(this.platform, this.);
-        // Додати обробник події worldbounds
-        // this.physics.world.on('worldbounds', function (body) {
-        //     console.log(platform.x)
-        //     if (body.gameObject === platform) {
-        //         console.log("bound")
-        //         platform.body.setVelocityX(v);
-        //         if (body.blocked.right || body.blocked.left) {
-        //             let currentVelocity = platform.body.velocity.x;
-        //             platform.body.setVelocityX(-Math.sign(currentVelocity) * Math.abs(currentVelocity));
-        //         }
-        //     }
-        // });
     }
     
 
@@ -143,22 +130,24 @@ function create() {
     });
 
     this.physics.add.overlap(player, stars, collectStar, null, this);
-
-    // Перевірка, щоб зірки не виходили за межі
     stars.children.iterate(function (star) {
         star.setCollideWorldBounds(true); // Перевірка зіткнення з межами світу
         star.body.onWorldBounds = true; // Відслідковування виходу за межі світу
-
-        star.body.world.on('worldbounds', function (body) {
-            if (body.gameObject === star) {
-                // Якщо зірка вийшла за межі екрану, скидаємо її
-                if (body.blocked.right || body.blocked.left || body.blocked.down) {
-                    star.setPosition(Phaser.Math.Between(0, worldWidth), 0); // Скидаємо зірку
-                    star.setVelocityY(Phaser.Math.Between(50, 100)); // Призначаємо нову швидкість
-                }
-            }
-        });
-    });
+    })
+    //     // Подія, яка спрацьовує при виході зірки за межі
+    //     star.body.world.on('worldbounds', function (body) {
+    //         if (body.gameObject === star) {
+    //             // Перевірка, чи зірка вийшла за межі з правого, лівого чи нижнього краю
+    //             if (body.blocked.right || body.blocked.left || body.blocked.down) {
+    //                 // Скидання позиції зірки
+    //                 star.setPosition(Phaser.Math.Between(0, worldWidth), 0); 
+    //                 // Нова швидкість
+    //                 star.setVelocityY(Phaser.Math.Between(50, 100)); 
+    //             }
+    //         }
+    //     });
+    // });
+    
 
     // Бомби
     bombs = this.physics.add.group();
